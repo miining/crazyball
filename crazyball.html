@@ -1,0 +1,165 @@
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="crazyball.css">
+        <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	    <script src="crazyball.js"></script>
+    </head>
+    <body>
+        <div id="ballGame">
+            <div class="game_container" id="mainMenu">
+                <div id="mainTitle" class="game-header">CrazyBall</div>
+                <img id="mainBtn1" src="images/start1.png" alt="시작" onclick="showStart()">
+                <img id="mainBtn2" src="images/guide1.png" alt="설명" onclick="introGame()">
+                <img id="mainBtn3" src="images/setting1.png" alt="설정" onclick="showSettings()">
+            </div>
+            <div class="game_container" id="chooseLevel" style="display: none;">
+                <div id="chooseL" class="game-header">난이도 선택</div>
+                <img id="easy" src="images/easy1.png" alt="이지" onclick="gameLevel('1')">
+                <img id="normal" src="images/normal1.png" alt="노말" onclick="gameLevel('2')">
+                <img id="hard" src="images/hard1.png" alt="하드" onclick="gameLevel('3')">
+                <button onclick="shiftMain()">돌아가기</button>
+            </div>
+            <div class="game_container" id="itemSettings" style="display: none;">
+                <div class="choose">
+                    <div class="game-header">맵 선택</div>
+                    <div class="chooseMap">
+                        <label for="map1"><img src="images/map1.png" alt="맵1"></label>
+                        <input type="radio" id="map1" name="map" value="맵1" checked: checked>아쿠아
+                    </div>
+                    <div class="chooseMap">
+                        <label for="map2"><img src="images/map2.png" alt="맵2"></label>
+                        <input type="radio" id="map2" name="map" value="맵2">포레스트                       
+                    </div>
+                    <div class="chooseMap">
+                        <label for="map3"><img src="images/map3.png" alt="맵3"></label>
+                        <input type="radio" id="map3" name="map" value="맵3">데저트                       
+                    </div>
+                </div>
+                <div class="choose">
+                    <div class="game-header">물풍선 선택</div>
+                    <div class="chooseBall">
+                        <label for="ball1"><img src="images/ball1.png" alt="물풍선1"></label>
+                        <input type="radio" id="ball1" name="ball" value="물풍선1" checked: checked>아쿠아블루                      
+                    </div>
+                    <div class="chooseBall">
+                        <label for="ball2"><img src="images/ball2.png" alt="물풍선2"></label>
+                        <input type="radio" id="ball2" name="ball" value="물풍선2">라임      
+                    </div>
+                    <div class="chooseBall">
+                        <label for="ball3"><img src="images/ball3.png" alt="물풍선3"></label>
+                        <input type="radio" id="ball3" name="ball" value="물풍선3">플레임                     
+                    </div>
+                </div>
+                <div class="choose">
+                    <div class="game-header">캐릭터 선택</div>
+                    <div class="chooseChar">
+                        <label for="char1"><img src="images/char1.png" alt="캐릭터1"></label>
+                        <input type="radio" id="char1" name="char" value="캐릭터1" checked: checked>다오                        
+                    </div>
+                    <div class="chooseChar">
+                        <label for="char2"><img src="images/char2.png" alt="캐릭터2"></label>
+                        <input type="radio" id="char2" name="char" value="캐릭터2">배찌                    
+                    </div>
+                    <div class="chooseChar">
+                        <label for="char3"><img src="images/char3.png" alt="캐릭터3"></label>
+                        <input type="radio" id="char3" name="char" value="캐릭터3">디지니                   
+                    </div>
+                </div>
+
+                <img id="optionBtn1" src="images/save1.png" alt="저장" onclick="dataStore()">
+                <img id="optionBtn2" src="images/back1.png" alt="돌아가기" onclick="shiftMain()">
+
+
+            </div>
+            <!--시작 버튼 누르고 배경설명-->
+            <div class="game_container" id="bgStory" style="display: none;">
+                <div class="game-header">
+                    <h3>로두마니가 친구를 잡아갔어요!</h3><h2>몬스터들을 무찌르고 로두마니한테서 친구를 구출하세요!</h2>
+                    <img id="skip" src="images/skip.png" width="300px" height="386px" alt="스킵" onclick="skipFunc()">
+                </div>
+            </div>
+
+            <div class="game_container" id="introSection" style="display:none;">
+                <img id="introImg" src="images/intro.png">
+                <div id="introTxt">게임에 나오는 몬스터들을 제한시간 안에 물풍선으로 맞춰서 쓰러뜨리세요!</div>
+                <div id="introDiv1">
+                    <img id="introDiv1_img1" src="images/upKey.png">
+                    <img id="introDiv1_img2" src="images/downKey.png">
+                    <div id="introDiv1_txt">캐릭터 이동</div>
+                </div>
+                <div id="introDiv2">
+                    <img id="introDiv2_img1" src="images/item1.png">
+                    <img id="introDiv2_img2" src="images/item2.png">
+                    <img id="introDiv2_img3" src="images/item3.png">
+                    <div id="introDiv2_txt">아이템 사용</div>
+                </div>
+                <img id="introBtn" src="images/back1.png" alt="돌아가기" onclick="shiftMain()">
+            </div>
+
+            <!-- 게임 시작 시 화면-->
+            <div class="game_container" id="easyLevel" style="display: none;">
+            <div class="header">
+                <div class="stats">
+                    <span>Point: 000000</span>
+                    <span>HP: ♥ ♥ ♥ ♥</span>
+                </div>
+                <div class="items">
+                    <div class="item"></div>
+                    <div class="item"></div>
+                    <div class="item"></div>
+                </div>
+                <div class="timer">
+                    Timer: 01:00
+                </div>
+            </div>
+        <div class="game-area1">
+            <div class="character"><img src="images/char1.png"></div>
+        </div>
+            </div>
+
+            <div class="game_container" id="normalLevel" style="display: none;">
+            <div class="header">
+                <div class="stats">
+                    <span>Point: 000000</span>
+                    <span>HP: ♥ ♥ ♥ ♥</span>
+                </div>
+                <div class="items">
+                    <div class="item"></div>
+                    <div class="item"></div>
+                    <div class="item"></div>
+                </div>
+                <div class="timer">
+                    Timer: 01:00
+                </div>
+            </div>
+        <div class="game-area2">
+            <div class="character"><img src="images/char1.png"></div>
+        </div>
+            </div>
+
+            <div class="game_container" id="hardLevel" style="display: none;">
+            <div class="header">
+                <div class="stats">
+                    <span>Point: 000000</span>
+                    <span>HP: ♥ ♥ ♥ ♥</span>
+                </div>
+                <div class="items">
+                    <div class="item"></div>
+                    <div class="item"></div>
+                    <div class="item"></div>
+                </div>
+                <div class="timer">
+                    Timer: 01:00
+                </div>
+            </div>
+        <div class="game-area3">
+            <div class="character"><img src="images/char1.png"></div>
+        </div>
+            </div>
+        </div>    
+    </body>
+</html>
