@@ -40,7 +40,13 @@ monsters[3] = {m_img: imgs[3], m_width:50, m_height:55, m_status: 1};
 monsters[4] = {m_img: imgs[4], m_width:50, m_height:55, m_status: 1};
 monsters[5] = {m_img: imgs[5], m_width:75, m_height:83, m_status: 2};
 
-
+//공 관련
+//공 관련
+var ballRadius = 10;
+var ballX = 10;
+var ballY = 250;
+var ballDX = 2;
+var ballDY = -2;
 
 
 //timer
@@ -60,6 +66,7 @@ function shiftMain(){
     buttonPush.play();
 }
 function hideAllSections() {
+    document.getElementById('start').style.display = 'none';
     document.getElementById('mainMenu').style.display = 'none';
     document.getElementById('chooseLevel').style.display = 'none';
     document.getElementById('bgStory').style.display = 'none';
@@ -70,7 +77,7 @@ function hideAllSections() {
 
 
 $(document).ready(function () {
-    $("#mainTitle").click(function(){
+    $("#start").click(function(){
         startAudio.play();
     });
     $("#mainBtn1").mouseover(function(){
@@ -115,6 +122,13 @@ $(document).ready(function () {
         $(this).attr("src","images/back1.png");
     });
 
+    $("#backBtn").mouseover(function(){
+        $(this).attr("src","images/back4.png");
+    });
+    $("#backBtn").mouseout(function(){
+        $(this).attr("src","images/back3.png");
+    });
+
 
 
     $("#easy").mouseover(function(){
@@ -140,7 +154,73 @@ $(document).ready(function () {
     canvas = document.querySelector(".game-area1");
     ctx = canvas.getContext('2d');
     //brickOffsetLeft = canvas.width;
+
+    ballX = 10;
+    ballY = 250;
+    characterY = (canvas.height - characterHeight) / 2;
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+    requestAnimationFrame(loopGame);
+
 });
+
+
+
+
+//물풍선 생성
+function drawBalloon(){
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2,true);
+    ctx.fillStyle = "red";
+    ctx.fill();
+}
+
+//캐릭터 움직임(키보드 입력)
+var upBtn = false;
+var downBtn = false;
+var characterHeight = 80;
+var characterWidth = 10;
+var characterX = 0;
+var characterY = (canvas.height - characterHeight) / 2;
+
+
+
+function keyDownHandler(e) {
+    if (e.key == 38 || e.key == "ArrowUp") {
+        upBtn = true;
+    } else if (e.key == 40 || e.key == "ArrowDown") {
+        downBtn = true;
+    }
+}
+
+function keyUpHandler(e) {
+    if (e.key == 38 || e.key == "ArrowUp") {
+        upBtn = false;
+    } else if (e.key == 40 || e.key == "ArrowDown") {
+        downBtn = false;
+    }
+}
+
+function drawCharacter() {
+    if(upBtn && characterY > 0) {
+        characterY -= 7;
+    } else if(downBtn && characterY < canvas.height - characterHeight) {
+        characterY += 7;
+    }
+    ctx.beginPath();
+    ctx.rect(characterX, characterY, characterWidth, characterHeight);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+}
+
+
+
+//게임 시작
+function gameStart(){
+    hideAllSections();
+    document.getElementById('mainMenu').style.display = 'block';
+}
 
 //시작 버튼
 function showStart(){
@@ -178,7 +258,6 @@ function dataStore(){  //array만들어서 맵,캐릭터,물풍선 저장하는�
     const selectedChar = document.querySelector('input[name="char"]:checked').previousElementSibling.src;
     selectedList = [selectedMap, selectedBall, selectedChar];
     shiftMain();
-    
     
 }
 
@@ -246,9 +325,50 @@ function addNewBricks() {
         }
     }
 }
+
+function collisionDetection() {
+    //공이 조작 캐릭터와 몬스터 맞을때
+    if ( ballX + ballDX < ballRadius) { 
+        ballDX = -ballDX;
+    }
+    //ballX > characterX && ballX < characterX + characterWidth
+
+    //공이 위, 아래 벽 맞을 때
+    if (ballY + ballDY < ballRadius || ballY + ballDY > canvas.height - ballRadius) {
+        ballDY = -ballDY;
+    } 
+    //공이 밖으로 나갈 때 
+    else{
+        //라이프 감소
+
+    }
+    for (let r = 0; r < brickRowCount; r++) {
+        for (let c = 0; c < bricks[r].length; c++) {
+            var b = bricks[r][c];
+            if (b.status == 1) {
+                if (ballX > b.x && ballX < b.x + brickWidth && ballY > b.y && ballY < b.y + brickHeight) {
+                    ballDX = -ballDX;
+                    b.status = 1; // 몬스터 라이프 깎이게 하면 될듯 일단 1로 해났음
+                }
+            }
+        }
+    }
+
+    ballX += ballDX;
+    ballY += ballDY;
+}
+
+
 //최종 그리기
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBricks();
+    drawCharacter();
+    drawBalloon();
+    collisionDetection();
 }
 
+function loopGame() {
+    draw();
+    requestAnimationFrame(loopGame);
+}

@@ -18,6 +18,21 @@
 	background-size: 100% 100%;
 }
 
+/*게임시작화면*/
+#start > img {
+	position: absolute;
+	width: 700px;
+	left: 150px;
+	border-radius: 20px;
+}
+
+#start > #startTxt {
+	position: absolute;
+	color: white;
+	left: 350px;
+	top: 400px;
+	font-size: 50px;
+}
 
 /*main*/
 #mainMenu > img {
@@ -340,6 +355,9 @@
 	position: absolute;
 	top: 80px;
 	left: 170px;
+}
+#chooseLevel > #backBtn {
+	width: 100px;
 }
 #chooseLevel > #easy {
 	width: 260px;

@@ -10,7 +10,11 @@
     </head>
     <body>
         <div id="ballGame">
-            <div class="game_container" id="mainMenu">
+            <div class="game_container" id="start" onclick="gameStart()">
+                <img id="gameTitle" src="images/title.jpeg">
+                <div id="startTxt">Click to start!</div>
+            </div>
+            <div class="game_container" id="mainMenu" style="display: none;">
                 <div id="mainTitle" class="game-header">CrazyBall</div>
                 <img id="mainBtn1" src="images/start1.png" alt="시작" onclick="showStart()">
                 <img id="mainBtn2" src="images/guide1.png" alt="설명" onclick="introGame()">
@@ -21,7 +25,7 @@
                 <img id="easy" src="images/easy1.png" alt="이지" onclick="gameLevel('1')">
                 <img id="normal" src="images/normal1.png" alt="노말" onclick="gameLevel('2')">
                 <img id="hard" src="images/hard1.png" alt="하드" onclick="gameLevel('3')">
-                <button onclick="shiftMain()">돌아가기</button>
+                <img id="backBtn" src="images/back3.png" alt="돌아가기" onclick="shiftMain()">
             </div>
             <div class="game_container" id="itemSettings" style="display: none;">
                 <div class="choose">
@@ -116,7 +120,7 @@
                     Timer: 01:00
                 </div>
             </div>
-            <canvas class="game-area1" width="1000" height="638"></canvas>
+            <canvas class="game-area1" id="game_canvas1" width="1000" height="638"></canvas>
             <div class="character"><img src="images/char1.png"></div>           
             </div>
 
