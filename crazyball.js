@@ -155,16 +155,20 @@ $(document).ready(function () {
     ctx = canvas.getContext('2d');
     //brickOffsetLeft = canvas.width;
 
+    
+    init();
+});
+
+
+function init(){
     ballX = 10;
     ballY = 250;
     characterY = (canvas.height - characterHeight) / 2;
     document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
+    resetBall();
     requestAnimationFrame(loopGame);
-
-});
-
-
+}
 
 
 //물풍선 생성
@@ -261,6 +265,12 @@ function dataStore(){  //array만들어서 맵,캐릭터,물풍선 저장하는�
     
 }
 
+function resetBall() {
+    ballX = 10;
+    ballY = canvas.height / 2;
+    ballDX = 2;
+    ballDY = -2;
+}
 
 
 function gameLevel(i){
@@ -326,12 +336,17 @@ function addNewBricks() {
     }
 }
 
-function collisionDetection() {
+function collisionFunc() {
     //공이 조작 캐릭터와 몬스터 맞을때
     if ( ballX + ballDX < ballRadius) { 
         ballDX = -ballDX;
     }
-    //ballX > characterX && ballX < characterX + characterWidth
+    
+    //오른쪽으로 나갈때
+    if (ballX + ballDX > canvas.width - ballRadius) {
+        resetBall();
+    }
+
 
     //공이 위, 아래 벽 맞을 때
     if (ballY + ballDY < ballRadius || ballY + ballDY > canvas.height - ballRadius) {
@@ -365,7 +380,7 @@ function draw() {
     drawBricks();
     drawCharacter();
     drawBalloon();
-    collisionDetection();
+    collisionFunc();
 }
 
 function loopGame() {
