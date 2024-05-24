@@ -20,7 +20,7 @@ var brickRowCount = 5; //벽돌 줄 수
 var brickColumnCount = 0;
 var brickPadding = 10; //벽돌 간의 간격
 var brickOffsetTop = 4; //화면 위에서 떨어진 간격
-var brickXIncrement = 0.5; // 벽돌이 왼쪽으로 이동하는 속도
+var brickXIncrement = 0.2; // 벽돌이 왼쪽으로 이동하는 속도
 var bricks = [];
 //몬스터(이미지)
 var imgs = [];
@@ -43,9 +43,9 @@ monsters[4] = {m_img: imgs[4], m_width:50, m_height:55, m_status: 1};
 monsters[5] = {m_img: imgs[5], m_width:75, m_height:83, m_status: 2};
 //보스 객체
 var boss = [];
-boss[0] = {m_img: imgs_boss[0], m_width:300, m_height:330, m_status: 10, speed: 0.2};
-boss[1] = {m_img: imgs_boss[1], m_width:300, m_height:330, m_status: 20, speed: 0.2};
-boss[2] = {m_img: imgs_boss[2], m_width:300, m_height:330, m_status: 30, speed: 0.2};
+boss[0] = {m_img: imgs_boss[0], m_width:300, m_height:330, m_status: 1, speed: 0.1};
+boss[1] = {m_img: imgs_boss[1], m_width:300, m_height:330, m_status: 20, speed: 0.1};
+boss[2] = {m_img: imgs_boss[2], m_width:300, m_height:330, m_status: 30, speed: 0.1};
 
 //캐릭터 이미지
 var imgs_char = [];
@@ -67,23 +67,29 @@ for(let i = 0; i < 3; i++) {
 }
 //물풍선 객체
 var ball = [];
-ball[0] = {img: imgs_ball[0], ballRadius: 10};
-ball[1] = {img: imgs_ball[1], ballRadius: 11};
-ball[2] = {img: imgs_ball[2], ballRadius: 12};
+ball[0] = {img: imgs_ball[0], ballRadius: 20};
+ball[1] = {img: imgs_ball[1], ballRadius: 22};
+ball[2] = {img: imgs_ball[2], ballRadius: 24};
 
 //공 관련
 var MyBall = ball[0]; //물풍선 저장한거에 맞춰서 인덱스 바꿔야 됨
 var ballRadius = MyBall.ballRadius;
 var ballX;
 var ballY;
-var ballDX = 2;
-var ballDY = -2;
+var ballDX;
+var ballDY;
+var ballSpeed = 3;
 //생명관련
 var life = 4;
 
+//점수관련
+var point = 0;
+
+//
+var level;
 
 //timer
-var time = 60;
+var time = 1; //60초
 var ANB; //addNewBricks
 var timer;
 var oneMinute;
@@ -109,6 +115,9 @@ function hideAllSections() {
     document.getElementById('bgStory').style.display = 'none';
     document.getElementById('itemSettings').style.display = 'none';
     document.getElementById('introSection').style.display = 'none';
+    document.getElementById('easyLevel').style.display = 'none';
+    //document.getElementById('normalLevel').style.display = 'none';
+    //document.getElementById('hardLevel').style.display = 'none';
 }
 
 
@@ -187,8 +196,8 @@ $(document).ready(function () {
         $(this).attr("src","images/hard1.png");
     });
 
-    //몬스터
-    canvas = document.querySelector(".game-area1");
+    //캔버스
+    canvas = document.querySelector(".game-area");
     ctx = canvas.getContext('2d');
     
     init();
@@ -196,12 +205,10 @@ $(document).ready(function () {
 
 
 function init(){
-    ballX = 10;
-    ballY = 250;
-    characterY = (canvas.height - MyChar.characterHeight) / 2;
+    //characterY = (canvas.height - MyChar.characterHeight) / 2;
     document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
-    resetBall();
+    //resetBall();
     //requestAnimationFrame(loopGame);
 }
 
@@ -306,44 +313,54 @@ function dataStore(){  //array만들어서 맵,캐릭터,물풍선 저장하는�
 function resetBall() {
     ballX = MyChar.characterWidth + 10;
     ballY = canvas.height / 2;
-    ballDX = 2;
-    ballDY = -2;
+    ballDX = ballSpeed;
+    ballDY = -ballSpeed;
 }
 
-
+var nowLevel; //현재 레벨
 function gameLevel(i){
-    if (i =='1') {
         buttonPush.play();
         hideAllSections();
+        //새로운 벽돌을 추가
+        resetBall();
+        makebricks();
+        addNewBricks();
+        characterY = (canvas.height - MyChar.characterHeight) / 2;
+    if (i =='1') {
+        nowLevel = 1;
         document.getElementById('easyLevel').style.display = 'block';
         //document.getElementById('gameArea1').style.backgroundImage = `url(${selectedList[0]})`;
         //document.getElementById('gameCharacter1').src = selectedList[2];
         startAudio.pause();
         easyBgm.play();
-        // 3초마다 새로운 벽돌을 추가
-        makebricks();
-        addNewBricks();
-        ANB = setInterval(addNewBricks, 3000);
-        timer = setInterval(draw,10);
-        oneMinute = setInterval(updateTimer, 1000)
+        //새로운 벽돌을 추가
+        level = "#easyLevel";
+        ANB = setInterval(addNewBricks, 10000); //10초마다
     } else if (i =='2') {
-        buttonPush.play();
-        hideAllSections();
-        document.getElementById('normalLevel').style.display = 'block';
-        document.getElementById('gameArea2').style.backgroundImage = `url(${selectedList[0]})`;
-        document.getElementById('gameCharacter2').src = selectedList[2];
+        nowLevel = 2;
+        document.getElementById('easyLevel').style.display = 'block';
+        //document.getElementById('gameArea2').style.backgroundImage = `url(${selectedList[0]})`;
+        //document.getElementById('gameCharacter2').src = selectedList[2];
         startAudio.pause();
         normalBgm.play();
+        //새로운 벽돌을 추가
+        level = "#easyLevel";
+        ANB = setInterval(addNewBricks, 1000); //6초마다
     } else {
-        buttonPush.play();
-        hideAllSections();
-        document.getElementById('hardLevel').style.display = 'block';
-        document.getElementById('gameArea2').style.backgroundImage = `url(${selectedList[0]})`;
-        document.getElementById('gameCharacter2').src = selectedList[2];
+        nowLevel = 3;
+        document.getElementById('easyLevel').style.display = 'block';
+        //document.getElementById('gameArea2').style.backgroundImage = `url(${selectedList[0]})`;
+        //document.getElementById('gameCharacter2').src = selectedList[2];
         startAudio.pause();
         hardBgm.play();
+        //새로운 벽돌을 추가
+        level = "#easyLevel";
+        ANB = setInterval(addNewBricks, 3000); //3초마다
     }
+    timer = setInterval(draw,10);
+    oneMinute = setInterval(updateTimer, 1000)
 }
+
 //첫 벽돌 생성(생성만 그리기X)
 function makebricks() {
     for (let r = 0; r < brickRowCount; r++) {
@@ -365,7 +382,7 @@ function drawBricks() {
                 ctx.drawImage(monster.m_img, brickX, brickY - monster.m_height / 2, monster.m_width, monster.m_height);
                 //끝까지 내려오면 라이프 감소
                 if(bricks[r][c].x <= 0) {
-                    lossLife();
+                    lossLife($(level));
                     bricks[r][c].status = 0;
                 }
             }
@@ -397,8 +414,8 @@ function collisionFunc() {
             const relativeY = ballY - (characterY + MyChar.characterHeight / 2);
             const maxBounceAngle = Math.PI / 3; // 60도
             const bounceAngle = (relativeY / (MyChar.characterHeight / 2)) * maxBounceAngle;
-            ballDX = 2 * Math.sqrt(2) * Math.cos(bounceAngle);
-            ballDY = 2 * Math.sqrt(2) * Math.sin(bounceAngle);
+            ballDX = ballSpeed * Math.sqrt(2) * Math.cos(bounceAngle);
+            ballDY = ballSpeed * Math.sqrt(2) * Math.sin(bounceAngle);
             ballX = ballRadius + MyChar.characterWidth;
         }
         
@@ -421,7 +438,7 @@ function collisionFunc() {
     if ( ballX + ballDX < ballRadius) {
         //라이프 감소
         resetBall();
-        lossLife();
+        lossLife($(level));
     }
     //몬스터 맞았을 때
     for (let r = 0; r < brickRowCount; r++) {
@@ -445,6 +462,39 @@ function collisionFunc() {
                     }
                     console.log(monster.m_img);
                     bricks[r][c].status -= 1; // 몬스터 라이프 깎이게 하면 될듯 일단 1로 해났음
+                    if(bricks[r][c].status <= 0) { //점수 올리기
+                        var score = $(level).find(".header .stats span").eq(0);
+                        if(monster == monsters[0] || monster == monsters[1] || monster == monsters[3] || monster == monsters[4]){
+                            point += 1000;
+                        }
+                        else if(monster == monsters[2]){
+                            point += 3000;
+                        }
+                        else if(monster == monsters[5]){
+                            point += 2000;
+                        }
+                        else if(monster == boss[0]){
+                            point += 10000;
+                        }
+                        else if(monster == boss[1]){
+                            point += 20000;
+                        }
+                        else if(monster == boss[2]){
+                            point += 30000;
+                        }
+                        score.text("Point: " + String(point).padStart(6, "0"));
+                    }
+                    if(monster == boss[0] || monster == boss[1] || monster == boss[2])
+                        if(bricks[r][c].status <= 0 ){
+                            alert("clear!!");
+                            resetGame();
+                            if(nowLevel == 1)
+                                gameLevel('2');
+                            else if(nowLevel == 2)
+                                gameLevel('3');
+                            else
+                                gameStart();
+                        }
                 }
             }
         }
@@ -455,24 +505,24 @@ function collisionFunc() {
 }
 
 //라이프 감소
-function lossLife() {
+function lossLife(level) {
     life--;
-    var lifeStats = $("#easyLevel .header .stats span").eq(1);
+    var lifeStats = level.find(".header .stats span").eq(1);
     if (life == 3){
-        console.log("3333");
         lifeStats.text("HP: ♥ ♥ ♥");
     }
     else if (life == 2){
-        console.log("2222");
         lifeStats.text("HP: ♥ ♥");
     }
     else if (life == 1){
-        console.log("1111");
         lifeStats.text("HP: ♥");
     }
     else {
         lifeStats.text("HP:");
         alert("game over!!");//게임오버
+        resetGame();
+        //메인화면으로 돌아가기
+        gameStart();
     }
 }
 
@@ -505,7 +555,7 @@ function updateTimer() {
     else if(time > 0)
         $(".timer").text("Timer: 00:0"+time);
     else {
-        time = 60;
+        time = 60; //시간 초기화
         $(".timer").text("Timer: 00:00");
         clearInterval(ANB);
         clearInterval(timer);
@@ -513,4 +563,31 @@ function updateTimer() {
         addBossBricks();
         bossTimer = setInterval(bossTime,10);
     }    
+}
+
+function resetGame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //시간 초기화
+    time = 60;
+    //벽돌 초기화
+    for (let r = 0; r < brickRowCount; r++) {
+        for (let c = 0; c < bricks[r].length; c++) {
+            bricks[r].pop();
+        }
+    }
+    //캐릭터 초기화
+    characterY = (canvas.height - MyChar.characterHeight) / 2;
+    //점수초기화
+    $(level)
+    .find(".header .stats span").eq(0)
+    .text("Point: 000000");
+    //목숨초기화
+    life = 4;
+    $(level)
+    .find(".header .stats span").eq(1)
+    .text("HP: ♥ ♥ ♥ ♥");
+    clearInterval(ANB);
+    clearInterval(timer);
+    clearInterval(oneMinute);
+    clearInterval(bossTimer);
 }
