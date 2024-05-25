@@ -11,6 +11,7 @@ var easyBgm = new Audio('bgm/easy.mp3');
 var normalBgm = new Audio('bgm/normal.mp3');
 var hardBgm = new Audio('bgm/hard.mp3');
 
+//설정에서 선택한 값들을 저장
 var selectedList = [];
 
 //몬스터(위치 관련)
@@ -32,7 +33,7 @@ var imgs_boss = [];
 for(let i = 0; i < 3; i++) {
     imgs_boss[i] = new Image();
     imgs_boss[i].src = "./images/boss"+(i+1)+".png";
-}
+} 
 //몬스터 객체
 var monsters = [];
 monsters[0] = {m_img: imgs[0], m_width:50, m_height:55, m_status: 1};
@@ -58,6 +59,7 @@ var character = [];
 character[0] = {img: imgs_char[0], characterWidth: 80, characterHeight: 100};
 character[1] = {img: imgs_char[1], characterWidth: 18, characterHeight: 19};
 character[2] = {img: imgs_char[2], characterWidth: 11, characterHeight: 14};
+var MyChar = character[0]; //캐릭터 저장한거에 맞춰서 인덱스 바꿔야 됨
 
 //물풍선 이미지
 var imgs_ball = [];
@@ -116,8 +118,6 @@ function hideAllSections() {
     document.getElementById('itemSettings').style.display = 'none';
     document.getElementById('introSection').style.display = 'none';
     document.getElementById('easyLevel').style.display = 'none';
-    //document.getElementById('normalLevel').style.display = 'none';
-    //document.getElementById('hardLevel').style.display = 'none';
 }
 
 
@@ -205,31 +205,22 @@ $(document).ready(function () {
 
 
 function init(){
-    //characterY = (canvas.height - MyChar.characterHeight) / 2;
     document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
-    //resetBall();
-    //requestAnimationFrame(loopGame);
+
 }
 
 
 //물풍선 생성
 function drawBalloon(){
-/*    ctx.beginPath();
-    ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2,true);
-    ctx.fillStyle = "red";
-    ctx.fill();*/
     ctx.drawImage(MyBall.img, ballX - MyBall.ballRadius, ballY - MyBall.ballRadius, MyBall.ballRadius * 2, MyBall.ballRadius * 2);
 }
 
 //캐릭터 움직임(키보드 입력)
 var upBtn = false;
 var downBtn = false;
-//var characterHeight = 80;
-//var characterWidth = 10;
 var characterX = 0;
 var characterY = 0;
-var MyChar = character[0]; //캐릭터 저장한거에 맞춰서 인덱스 바꿔야 됨
 
 
 
@@ -255,11 +246,6 @@ function drawCharacter() {
     } else if(downBtn && characterY < canvas.height - MyChar.characterHeight) {
         characterY += 7;
     }
-/*    ctx.beginPath();
-    ctx.rect(characterX, characterY, MyChar.characterWidth, MyChar.characterHeight);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();*/
     ctx.drawImage(MyChar.img, characterX, characterY, MyChar.characterWidth, MyChar.characterHeight);
 }
 
@@ -285,12 +271,16 @@ function introGame(){
     document.getElementById('introSection').style.display = 'block';
 }
 
+
+
 //설정 버튼
 function showSettings(){
     buttonPush.play();
     hideAllSections();
     document.getElementById('itemSettings').style.display = 'block';
+   
 }
+
 
 //skip button
 function skipFunc(){
@@ -298,16 +288,61 @@ function skipFunc(){
     hideAllSections();
     document.getElementById('chooseLevel').style.display = 'block';
 }
+
 //저장 버튼
 function dataStore(){  //array만들어서 맵,캐릭터,물풍선 저장하는거 만들면 될듯
     //라디오 버튼에서 선택한 value가져옴
 
-    const selectedMap = document.querySelector('input[name="map"]:checked').previousElementSibling.src;
-    const selectedBall = document.querySelector('input[name="ball"]:checked').previousElementSibling.src;
-    const selectedChar = document.querySelector('input[name="char"]:checked').previousElementSibling.src;
-    selectedList = [selectedMap, selectedBall, selectedChar];
+    const selectedMap = document.querySelector('input[type=radio][name=map]:checked').parentElement.querySelector('img').getAttribute('src');
+    const selectedBall = document.querySelector('input[type=radio][name=ball]:checked').parentElement.querySelector('img').getAttribute('src');
+    const selectedChar = document.querySelector('input[type=radio][name=char]:checked').parentElement.querySelector('img').getAttribute('src');
+    selectedList = [selectedMap, selectedBall,selectedChar];
+
+    //test
+    console.log("Selected List:", selectedList);
+
+    //key-value로 저장 (localStorage)
+    const mapVal = document.querySelector('input[type=radio][name=map]:checked').value;
+    const ballVal = document.querySelector('input[type=radio][name=ball]:checked').value;
+    const charVal = document.querySelector('input[type=radio][name=char]:checked').value;
+
+    localStorage.setItem('map_key', mapVal);
+    localStorage.setItem('ball_key', ballVal);
+    localStorage.setItem('char_key', charVal);
+
+    keepRadioBtn();
+
     shiftMain();
     
+}
+
+//라디오버튼 값들 유지
+function keepRadioBtn(){
+    const radioMap = localStorage.getItem('map_key');
+    const radioBall = localStorage.getItem('ball_key');
+    const radioChar = localStorage.getItem('char_key');
+
+    if (radioMap) {
+        const mapEle = document.querySelector(`input[type=radio][name=map][value="${radioMap}"]`);
+        if (mapEle) {
+            mapEle.checked = true;
+            
+        }
+    }
+    if (radioBall) {
+        const ballEle = document.querySelector(`input[type=radio][name=ball][value="${radioBall}"]`);
+        if (ballEle) {
+            ballEle.checked = true;
+        }
+    }
+    if (radioChar) {
+        const charEle = document.querySelector(`input[type=radio][name=char][value="${radioChar}"]`);
+        if (charEle) {
+            charEle.checked = true;
+        }
+    }
+    //test
+    console.log("Selected List keepRadioBtn:", selectedList);
 }
 
 function resetBall() {
@@ -320,7 +355,29 @@ function resetBall() {
 var nowLevel; //현재 레벨
 function gameLevel(i){
         buttonPush.play();
-        hideAllSections();
+        hideAllSections(); 
+        
+        document.getElementById('game_canvas').style.background = `url("./${selectedList[0]}")`;
+
+        // MyChar를 이미지 객체와 관련된 속성으로 설정
+        for (let j = 0; j < imgs_char.length; j++) {
+            if (imgs_char[j].src.includes(selectedList[2])) {
+                MyChar = character[j];
+                break;
+            }
+        }
+        for (let j = 0; j < imgs_ball.length; j++) {
+            if (imgs_ball[j].src.includes(selectedList[1])) {
+                MyBall = ball[j];
+                ballRadius = MyBall.ballRadius;
+                break;
+            }
+        }
+
+        
+        //test
+        console.log("In gameLevel:", MyChar);
+
         //새로운 벽돌을 추가
         resetBall();
         makebricks();
@@ -329,8 +386,6 @@ function gameLevel(i){
     if (i =='1') {
         nowLevel = 1;
         document.getElementById('easyLevel').style.display = 'block';
-        //document.getElementById('gameArea1').style.backgroundImage = `url(${selectedList[0]})`;
-        //document.getElementById('gameCharacter1').src = selectedList[2];
         startAudio.pause();
         easyBgm.play();
         //새로운 벽돌을 추가
@@ -339,8 +394,6 @@ function gameLevel(i){
     } else if (i =='2') {
         nowLevel = 2;
         document.getElementById('easyLevel').style.display = 'block';
-        //document.getElementById('gameArea2').style.backgroundImage = `url(${selectedList[0]})`;
-        //document.getElementById('gameCharacter2').src = selectedList[2];
         startAudio.pause();
         normalBgm.play();
         //새로운 벽돌을 추가
@@ -349,8 +402,6 @@ function gameLevel(i){
     } else {
         nowLevel = 3;
         document.getElementById('easyLevel').style.display = 'block';
-        //document.getElementById('gameArea2').style.backgroundImage = `url(${selectedList[0]})`;
-        //document.getElementById('gameCharacter2').src = selectedList[2];
         startAudio.pause();
         hardBgm.play();
         //새로운 벽돌을 추가
@@ -359,7 +410,10 @@ function gameLevel(i){
     }
     timer = setInterval(draw,10);
     oneMinute = setInterval(updateTimer, 1000)
+    
+    
 }
+
 
 //첫 벽돌 생성(생성만 그리기X)
 function makebricks() {
@@ -543,10 +597,7 @@ function bossTime() {
     collisionFunc();
 }
 
-/*function loopGame() {
-    draw();
-    requestAnimationFrame(loopGame);
-}*/
+
 
 function updateTimer() {
     time--;
