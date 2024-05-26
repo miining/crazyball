@@ -133,6 +133,7 @@ function hideAllSections() {
     document.getElementById('itemSettings').style.display = 'none';
     document.getElementById('introSection').style.display = 'none';
     document.getElementById('easyLevel').style.display = 'none';
+    document.getElementById('endStory').style.display = 'none';
 }
 
 
