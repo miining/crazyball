@@ -357,8 +357,13 @@ function gameLevel(i){
         buttonPush.play();
         hideAllSections(); 
         
-        document.getElementById('game_canvas').style.background = `url("./${selectedList[0]}")`;
+        //document.getElementById('game_canvas').style.background = `url("./${selectedList[0]}")`;
 
+        if (selectedList[0]) {
+            canvas.style.backgroundImage = `url("./${selectedList[0]}")`;
+        } else {
+            canvas.style.backgroundImage = 'url("images/map1.png")'; // 기본 배경
+        }
         // MyChar를 이미지 객체와 관련된 속성으로 설정
         for (let j = 0; j < imgs_char.length; j++) {
             if (imgs_char[j].src.includes(selectedList[2])) {
