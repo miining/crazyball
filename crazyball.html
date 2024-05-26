@@ -96,6 +96,7 @@
                     <div id="introDiv1_txt">캐릭터 이동</div>
                 </div>
                 <div id="introDiv2">
+                    
                     <img id="introDiv2_img" src="images/itemIntro.png">
                     <div id="introDiv2_txt">아이템 사용</div>
                     <div id="introDiv2_txt">아이템 사용</div>
@@ -105,26 +106,21 @@
 
             <!-- 게임 시작 시 화면-->
             <div class="game_container" id="easyLevel" style="display: none;">
-                <div class="header">
-                    <div class="stats">
-                        <span>Point: 000000</span>
-                        <span>HP: ♥ ♥ ♥ ♥</span>
-                    </div>
-                    <div class="items">
-                        <div class="item"></div>
-                        <div class="item"></div>
-                        <div class="item"></div>
-                    </div>
-                    <div class="timer">
-                        Timer: 01:00
-                    </div>
+            <div class="header">
+                <div class="stats">
+                    <span>Point: 000000</span>
+                    <span>HP: ♥ ♥ ♥ ♥</span>
                 </div>
-                <canvas class="game-area" id="game_canvas" width="1000" height="638"></canvas>
+                <div class="items">
+                    <div class="item"></div>
+                    <div class="item"></div>
+                    <div class="item"></div>
+                </div>
+                <div class="timer">
+                    Timer: 01:00
+                </div>
             </div>
-
-            <!--ending story-->
-            <div class="game_container" id="endStory" style="display: none;">
-                <img id="endimg" src="images/endingImg.png"  onclick="gameStart()">
+            <canvas class="game-area" id="game_canvas" width="1000" height="638"></canvas>
             </div>
 
             <!-- <div class="game_container" id="normalLevel" style="display: none;">

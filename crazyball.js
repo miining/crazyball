@@ -21,7 +21,7 @@ var brickRowCount = 5; //벽돌 줄 수
 var brickColumnCount = 0;
 var brickPadding = 10; //벽돌 간의 간격
 var brickOffsetTop = 4; //화면 위에서 떨어진 간격
-var brickXIncrement = 0.2; // 벽돌이 왼쪽으로 이동하는 속도
+var brickXIncrement = 0.1; // 벽돌이 왼쪽으로 이동하는 속도
 var bricks = [];
 //몬스터(이미지)
 var imgs = [];
@@ -38,7 +38,7 @@ for(let i = 0; i < 3; i++) {
 var monsters = [];
 monsters[0] = {m_img: imgs[0], m_width:50, m_height:55, m_status: 1};
 monsters[1] = {m_img: imgs[1], m_width:50, m_height:55, m_status: 1};
-monsters[2] = {m_img: imgs[2], m_width:100, m_height:110, m_status: 3};
+monsters[2] = {m_img: imgs[2], m_width:100, m_height:110, m_status: 2};
 monsters[3] = {m_img: imgs[3], m_width:50, m_height:55, m_status: 1};
 monsters[4] = {m_img: imgs[4], m_width:50, m_height:55, m_status: 1};
 monsters[5] = {m_img: imgs[5], m_width:75, m_height:83, m_status: 2};
@@ -57,8 +57,8 @@ for(let i = 0; i < 3; i++) {
 //캐릭터 객체
 var character = [];
 character[0] = {img: imgs_char[0], characterWidth: 80, characterHeight: 100};
-character[1] = {img: imgs_char[1], characterWidth: 18, characterHeight: 19};
-character[2] = {img: imgs_char[2], characterWidth: 11, characterHeight: 14};
+character[1] = {img: imgs_char[1], characterWidth: 80, characterHeight: 100};
+character[2] = {img: imgs_char[2], characterWidth: 80, characterHeight: 100};
 var MyChar = character[0]; //캐릭터 저장한거에 맞춰서 인덱스 바꿔야 됨
 
 //물풍선 이미지
@@ -68,14 +68,14 @@ for(let i = 0; i < 3; i++) {
     imgs_ball[i].src = "./images/ball"+(i+1)+".png";
 }
 //물풍선 객체
+var ballDamage = 1;
 var ball = [];
 ball[0] = {img: imgs_ball[0], ballRadius: 20};
-ball[1] = {img: imgs_ball[1], ballRadius: 22};
-ball[2] = {img: imgs_ball[2], ballRadius: 24};
+ball[1] = {img: imgs_ball[1], ballRadius: 20};
+ball[2] = {img: imgs_ball[2], ballRadius: 20};
 
 //공 관련
 var MyBall = ball[0]; //물풍선 저장한거에 맞춰서 인덱스 바꿔야 됨
-var ballRadius = MyBall.ballRadius;
 var ballX;
 var ballY;
 var ballDX;
@@ -87,11 +87,26 @@ var life = 4;
 //점수관련
 var point = 0;
 
-//
+//난이도
 var level;
 
+//아이템 이미지
+var imgs_item = [];
+for(let i = 0; i < 3; i++) {
+    imgs_item[i] = new Image();
+    imgs_item[i].src = "./images/item"+(i+1)+".png";
+}
+//아이템
+var item1_max = 4;
+var item2_max = 10;
+var item3_max = 4;
+var item = [];
+item[0] = {m_img: imgs_item[0], m_width:50, m_height:55};
+item[1] = {m_img: imgs_item[1], m_width:50, m_height:55};
+item[2] = {m_img: imgs_item[2], m_width:50, m_height:55};
+
 //timer
-var time = 1; //60초
+var time = 60; //60초
 var ANB; //addNewBricks
 var timer;
 var oneMinute;
@@ -104,7 +119,7 @@ const stopAudio = () => {
 }
 
 
-//뒤로 돌아가기 버튼l
+//뒤로 돌아가기 버튼
 function shiftMain(){
     hideAllSections();
     document.getElementById('mainMenu').style.display = 'block';
@@ -118,14 +133,13 @@ function hideAllSections() {
     document.getElementById('itemSettings').style.display = 'none';
     document.getElementById('introSection').style.display = 'none';
     document.getElementById('easyLevel').style.display = 'none';
-    document.getElementById('endStory').style.display = 'none'; 
 }
 
 
 
 $(document).ready(function () {
     $("#start").click(function(){
-        startAudio.play();
+        //startAudio.play();
     });
     $("#mainBtn1").mouseover(function(){
         $(this).attr("src","images/start2.png");
@@ -358,11 +372,8 @@ function gameLevel(i){
         buttonPush.play();
         hideAllSections(); 
         
-        if (selectedList[0]) {
-            canvas.style.backgroundImage = `url("./${selectedList[0]}")`;
-        } else {
-            canvas.style.backgroundImage = 'url("images/map1.png")'; // 기본 배경
-        }
+        document.getElementById('game_canvas').style.background = `url("./${selectedList[0]}")`;
+
         // MyChar를 이미지 객체와 관련된 속성으로 설정
         for (let j = 0; j < imgs_char.length; j++) {
             if (imgs_char[j].src.includes(selectedList[2])) {
@@ -373,7 +384,6 @@ function gameLevel(i){
         for (let j = 0; j < imgs_ball.length; j++) {
             if (imgs_ball[j].src.includes(selectedList[1])) {
                 MyBall = ball[j];
-                ballRadius = MyBall.ballRadius;
                 break;
             }
         }
@@ -381,6 +391,7 @@ function gameLevel(i){
         
         //test
         console.log("In gameLevel:", MyChar);
+        console.log("In gameLevel:", MyChar.img);
 
         //새로운 벽돌을 추가
         resetBall();
@@ -390,27 +401,30 @@ function gameLevel(i){
     if (i =='1') {
         nowLevel = 1;
         document.getElementById('easyLevel').style.display = 'block';
-        startAudio.pause();
-        easyBgm.play();
+        //startAudio.pause();
+        //easyBgm.play();
         //새로운 벽돌을 추가
         level = "#easyLevel";
-        ANB = setInterval(addNewBricks, 10000); //10초마다
+        ANB = setInterval(addNewBricks, 1000); //10초마다
+        brickXIncrement = 0.1;
     } else if (i =='2') {
         nowLevel = 2;
         document.getElementById('easyLevel').style.display = 'block';
-        startAudio.pause();
-        normalBgm.play();
+        //startAudio.pause();
+        //normalBgm.play();
         //새로운 벽돌을 추가
         level = "#easyLevel";
-        ANB = setInterval(addNewBricks, 1000); //6초마다
+        ANB = setInterval(addNewBricks, 6000); //6초마다
+        brickXIncrement = 0.15;
     } else {
         nowLevel = 3;
         document.getElementById('easyLevel').style.display = 'block';
-        startAudio.pause();
-        hardBgm.play();
+        //startAudio.pause();
+        //hardBgm.play();
         //새로운 벽돌을 추가
         level = "#easyLevel";
         ANB = setInterval(addNewBricks, 3000); //3초마다
+        brickXIncrement = 0.2;
     }
     timer = setInterval(draw,10);
     oneMinute = setInterval(updateTimer, 1000)
@@ -440,7 +454,8 @@ function drawBricks() {
                 ctx.drawImage(monster.m_img, brickX, brickY - monster.m_height / 2, monster.m_width, monster.m_height);
                 //끝까지 내려오면 라이프 감소
                 if(bricks[r][c].x <= 0) {
-                    lossLife($(level));
+                    if(monster != item[0] && monster != item[1] && monster != item[2])
+                        lossLife($(level));
                     bricks[r][c].status = 0;
                 }
             }
@@ -451,9 +466,43 @@ function drawBricks() {
 function addNewBricks() {
     for (let r = 0; r < brickRowCount; r++) {
         if (Math.floor(Math.random()*2)) {
-            var random_index = Math.floor(Math.random()*6);
-            bricks[r].push({ type: monsters[random_index], x: canvas.width, y: (2 * r + 1) * (canvas.height - 2 * brickOffsetTop) / 10, status: monsters[random_index].m_status }); // 새로운 벽돌을 오른쪽에 추가
-        }
+            if (Math.floor(Math.random()*10) >= 1) { //몬스터 90%
+                var random_index = Math.floor(Math.random()*6);
+                bricks[r].push({ type: monsters[random_index], x: canvas.width, y: (2 * r + 1) * (canvas.height - 2 * brickOffsetTop) / 10, status: monsters[random_index].m_status }); // 새로운 벽돌을 오른쪽에 추가
+            }
+            else{ //아이템 10%
+                let i = 1;
+                while (i) { 
+                    if(item1_max <= 0 || item2_max <= 0 || item3_max <= 0)
+                        break;
+                    let random_3 = Math.floor(Math.random()*3)
+                    if (random_3 == 0){
+                        if(item1_max <= 0) //아이템1-공크기-+5(최대40)
+                            continue;
+                        bricks[r].push({ type: item[0], x: canvas.width, y: (2 * r + 1) * (canvas.height - 2 * brickOffsetTop) / 10, status: 1});
+                        //item1--;
+                        //ballRadius += 5;
+                        i = 0;
+                    }
+                    else if(random_3 == 1){
+                        if(item2_max <= 0) //아이템2-캐릭터크기-+10(최대200)
+                            continue;
+                        bricks[r].push({ type: item[1], x: canvas.width, y: (2 * r + 1) * (canvas.height - 2 * brickOffsetTop) / 10, status: 1});
+                        //item2--;
+                        //characterHeight += 10;
+                        i = 0;
+                    }
+                    else{ //아이템3-공데미지+1(최대5)
+                        if(item3_max <= 0)
+                            continue;
+                        bricks[r].push({ type: item[2], x: canvas.width, y: (2 * r + 1) * (canvas.height - 2 * brickOffsetTop) / 10, status: 1});
+                        //item3--;
+                        //ballDamage += 1;
+                        i = 0;
+                    }
+                }
+            }
+        } 
     }
 }
 
@@ -463,42 +512,42 @@ function addBossBricks() {
 
 function collisionFunc() {
     //공이 조작 캐릭터와 맞을때
-    if (ballX - ballRadius < characterX + MyChar.characterWidth &&
-        ballY + ballRadius > characterY && ballY - ballRadius < characterY + MyChar.characterHeight) {
+    if (ballX - MyBall.ballRadius < characterX + MyChar.characterWidth &&
+        ballY + MyBall.ballRadius > characterY && ballY - MyBall.ballRadius < characterY + MyChar.characterHeight) {
         
         // 공이 캐릭터의 왼쪽이나 오른쪽에 부딪힌 경우
-        if (ballX - ballDX + ballRadius <= characterX || ballX - ballDX - ballRadius >= characterX + MyChar.characterWidth) {
+        if (ballX - ballDX + MyBall.ballRadius <= characterX || ballX - ballDX - MyBall.ballRadius >= characterX + MyChar.characterWidth) {
             //ballDX = -ballDX;
             const relativeY = ballY - (characterY + MyChar.characterHeight / 2);
             const maxBounceAngle = Math.PI / 3; // 60도
             const bounceAngle = (relativeY / (MyChar.characterHeight / 2)) * maxBounceAngle;
             ballDX = ballSpeed * Math.sqrt(2) * Math.cos(bounceAngle);
             ballDY = ballSpeed * Math.sqrt(2) * Math.sin(bounceAngle);
-            ballX = ballRadius + MyChar.characterWidth;
+            ballX = MyBall.ballRadius + MyChar.characterWidth;
         }
         
         // 공이 벽돌의 위쪽이나 아래쪽에 부딪힌 경우
-        if (ballY - ballDY + ballRadius <= characterY || ballY - ballDY - ballRadius >= characterY + MyChar.characterHeight) {
+        if (ballY - ballDY + MyBall.ballRadius <= characterY || ballY - ballDY - MyBall.ballRadius >= characterY + MyChar.characterHeight) {
             ballDY = -ballDY;
         }
     }
     
     //오른쪽으로 나갈때
-    if (ballX + ballDX > canvas.width - ballRadius) {
+    if (ballX + ballDX > canvas.width - MyBall.ballRadius) {
         ballDX = -ballDX;
         //resetBall();
     }
     //공이 위, 아래 벽 맞을 때
-    if (ballY + ballDY < ballRadius || ballY + ballDY > canvas.height - ballRadius) {
+    if (ballY + ballDY < MyBall.ballRadius || ballY + ballDY > canvas.height - MyBall.ballRadius) {
         ballDY = -ballDY;
     } 
     //공이 왼쪽으로 나갈 때
-    if ( ballX + ballDX < ballRadius) {
+    if ( ballX + ballDX < MyBall.ballRadius) {
         //라이프 감소
         resetBall();
         lossLife($(level));
     }
-    //몬스터 맞았을 때
+    //벽돌 맞았을 때
     for (let r = 0; r < brickRowCount; r++) {
         for (let c = 0; c < bricks[r].length; c++) {
             var brickX = bricks[r][c].x;
@@ -506,21 +555,41 @@ function collisionFunc() {
             var monster = bricks[r][c].type; //몬스터 타입
             var status = bricks[r][c].status; // 몬스터 목숨
             if (status >= 1) {
-                if (ballX + ballRadius > brickX && ballX - ballRadius < brickX + monster.m_width &&
-                    ballY + ballRadius > brickY - monster.m_height / 2 && ballY - ballRadius < brickY + monster.m_height / 2) {
+                if (ballX + MyBall.ballRadius > brickX && ballX - MyBall.ballRadius < brickX + monster.m_width &&
+                    ballY + MyBall.ballRadius > brickY - monster.m_height / 2 && ballY - MyBall.ballRadius < brickY + monster.m_height / 2) {
                     
                     // 공이 벽돌의 왼쪽이나 오른쪽에 부딪힌 경우
-                    if (ballX - ballDX + ballRadius <= brickX || ballX - ballDX - ballRadius >= brickX + monster.m_width) {
+                    if (ballX - ballDX + MyBall.ballRadius <= brickX || ballX - ballDX - MyBall.ballRadius >= brickX + monster.m_width) {
                         ballDX = -ballDX;
                     }
                     
                     // 공이 벽돌의 위쪽이나 아래쪽에 부딪힌 경우
-                    if (ballY - ballDY + ballRadius <= brickY - monster.m_height / 2 || ballY - ballDY - ballRadius >= brickY + monster.m_height / 2) {
+                    if (ballY - ballDY + MyBall.ballRadius <= brickY - monster.m_height / 2 || ballY - ballDY - MyBall.ballRadius >= brickY + monster.m_height / 2) {
                         ballDY = -ballDY;
                     }
                     console.log(monster.m_img);
-                    bricks[r][c].status -= 1; // 몬스터 라이프 깎이게 하면 될듯 일단 1로 해났음
-                    if(bricks[r][c].status <= 0) { //점수 올리기
+                    bricks[r][c].status -= ballDamage; // 몬스터 라이프 깎이게 하면 될듯 일단 1로 해났음
+                    if(bricks[r][c].status <= 0) {
+                        //아이템 먹었을 때
+                        if(monster == item[0]){ //아이템1-공크기-+5(최대40)
+                            if(MyBall.ballRadius < 40)
+                                MyBall.ballRadius += 5
+                            console.log(MyBall.ballRadius);
+                            item1_max--;
+                        }
+                        else if(monster == item[1]) { //아이템2-캐릭터크기-+10(최대200)
+                            if(MyChar.characterHeight < 200)
+                                MyChar.characterHeight += 10;
+                            console.log(MyChar.characterHeight);
+                            item2_max--;
+                        }
+                        else if(monster == item[2]) { //아이템3-공데미지+1(최대5)
+                            if(ballDamage < 5)
+                                ballDamage += 1;
+                            console.log(ballDamage);
+                            item3_max--;
+                        }
+                        //점수 올리기
                         var score = $(level).find(".header .stats span").eq(0);
                         if(monster == monsters[0] || monster == monsters[1] || monster == monsters[3] || monster == monsters[4]){
                             point += 1000;
@@ -551,7 +620,8 @@ function collisionFunc() {
                             else if(nowLevel == 2)
                                 gameLevel('3');
                             else
-                                endingStory();
+                                //엔딩함수
+                                gameStart();
                         }
                 }
             }
@@ -601,12 +671,7 @@ function bossTime() {
     collisionFunc();
 }
 
-//hard clear시 스토리 마무리
-function endingStory(){ 
-    hideAllSections();
-    document.getElementById('endStory').style.display = 'block';
-    
-}
+
 
 function updateTimer() {
     time--;
@@ -650,4 +715,11 @@ function resetGame() {
     clearInterval(timer);
     clearInterval(oneMinute);
     clearInterval(bossTimer);
+    //아이템 먹은거 초기화
+    MyBall.ballRadius = 20;
+    MyChar.characterHeight = 100;
+    ballDamage = 1;
+    item1_max = 4;
+    item2_max = 10;
+    item3_max = 4;
 }
