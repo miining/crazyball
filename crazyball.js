@@ -626,6 +626,7 @@ function collisionFunc() {
                             else
                                 //엔딩함수
                                 gameStart();
+                                endingStory();
                         }
                 }
             }
@@ -675,7 +676,12 @@ function bossTime() {
     collisionFunc();
 }
 
+//hard clear시 스토리 마무리
+function endingStory(){ 
+    hideAllSections();
+    document.getElementById('endStory').style.display = 'block';
 
+}
 
 function updateTimer() {
     time--;
