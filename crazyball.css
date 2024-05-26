@@ -160,23 +160,11 @@
 }
 
 
-#introSection > #introDiv2 > #introDiv2_img1 {
+#introSection > #introDiv2 > #introDiv2_img {
 	position: absolute;
-	width: 60px;
+	width: 250px;
 	left: 30px;
-	top: 90px;
-}
-#introSection > #introDiv2 > #introDiv2_img2 {
-	position: absolute;
-	width: 60px;
-	left: 120px;
-	top: 50px;
-}
-#introSection > #introDiv2 > #introDiv2_img3 {
-	position: absolute;
-	width: 60px;
-	right: 30px;
-	top: 50px;
+	top: -75px;
 }
 
 /*itemSettings*/

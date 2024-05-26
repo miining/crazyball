@@ -104,7 +104,7 @@ const stopAudio = () => {
 }
 
 
-//뒤로 돌아가기 버튼
+//뒤로 돌아가기 버튼l
 function shiftMain(){
     hideAllSections();
     document.getElementById('mainMenu').style.display = 'block';
@@ -118,6 +118,7 @@ function hideAllSections() {
     document.getElementById('itemSettings').style.display = 'none';
     document.getElementById('introSection').style.display = 'none';
     document.getElementById('easyLevel').style.display = 'none';
+    document.getElementById('endStory').style.display = 'none'; 
 }
 
 
@@ -357,8 +358,6 @@ function gameLevel(i){
         buttonPush.play();
         hideAllSections(); 
         
-        //document.getElementById('game_canvas').style.background = `url("./${selectedList[0]}")`;
-
         if (selectedList[0]) {
             canvas.style.backgroundImage = `url("./${selectedList[0]}")`;
         } else {
@@ -552,7 +551,7 @@ function collisionFunc() {
                             else if(nowLevel == 2)
                                 gameLevel('3');
                             else
-                                gameStart();
+                                endingStory();
                         }
                 }
             }
@@ -602,7 +601,12 @@ function bossTime() {
     collisionFunc();
 }
 
-
+//hard clear시 스토리 마무리
+function endingStory(){ 
+    hideAllSections();
+    document.getElementById('endStory').style.display = 'block';
+    
+}
 
 function updateTimer() {
     time--;

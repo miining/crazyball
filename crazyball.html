@@ -96,9 +96,8 @@
                     <div id="introDiv1_txt">캐릭터 이동</div>
                 </div>
                 <div id="introDiv2">
-                    <img id="introDiv2_img1" src="images/item1.png">
-                    <img id="introDiv2_img2" src="images/item2.png">
-                    <img id="introDiv2_img3" src="images/item3.png">
+                    <img id="introDiv2_img" src="images/itemIntro.png">
+                    <div id="introDiv2_txt">아이템 사용</div>
                     <div id="introDiv2_txt">아이템 사용</div>
                 </div>
                 <img id="introBtn" src="images/back1.png" alt="돌아가기" onclick="shiftMain()">
@@ -106,21 +105,26 @@
 
             <!-- 게임 시작 시 화면-->
             <div class="game_container" id="easyLevel" style="display: none;">
-            <div class="header">
-                <div class="stats">
-                    <span>Point: 000000</span>
-                    <span>HP: ♥ ♥ ♥ ♥</span>
+                <div class="header">
+                    <div class="stats">
+                        <span>Point: 000000</span>
+                        <span>HP: ♥ ♥ ♥ ♥</span>
+                    </div>
+                    <div class="items">
+                        <div class="item"></div>
+                        <div class="item"></div>
+                        <div class="item"></div>
+                    </div>
+                    <div class="timer">
+                        Timer: 01:00
+                    </div>
                 </div>
-                <div class="items">
-                    <div class="item"></div>
-                    <div class="item"></div>
-                    <div class="item"></div>
-                </div>
-                <div class="timer">
-                    Timer: 01:00
-                </div>
+                <canvas class="game-area" id="game_canvas" width="1000" height="638"></canvas>
             </div>
-            <canvas class="game-area" id="game_canvas" width="1000" height="638"></canvas>
+
+            <!--ending story-->
+            <div class="game_container" id="endStory" style="display: none;">
+                <img id="endimg" src="images/endingImg.png"  onclick="gameStart()">
             </div>
 
             <!-- <div class="game_container" id="normalLevel" style="display: none;">
