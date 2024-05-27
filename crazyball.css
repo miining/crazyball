@@ -95,6 +95,16 @@
 	font-size: 32px;
 	color: #000000;
 }
+#introSection > #introTxt2 {
+	position: absolute;
+	width: 1000px;
+	height: 100px;
+	line-height: 100px;
+	text-align: center;
+	top: 250px;
+	font-size: 32px;
+	color: #000000;
+}
 
 #introSection > #introTxt2 {
 	position: absolute;
