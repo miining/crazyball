@@ -729,6 +729,7 @@ function bossTime() {
 function endingStory(){ 
     hideAllSections();
     hardBgm.pause();
+    startAudio.pause();
     settingBgm.play();
     document.getElementById('endStory').style.display = 'block';
 
