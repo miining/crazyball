@@ -89,7 +89,8 @@
 
             <div class="game_container" id="introSection" style="display:none;">
                 <img id="introImg" src="images/intro.png">
-                <div id="introTxt">게임에 나오는 몬스터들을 제한시간 안에 물풍선으로 맞춰서 쓰러뜨리세요!</div>
+                <div id="introTxt1">게임에 나오는 몬스터들을 물풍선으로 맞춰서 쓰러뜨리세요!</div>
+                <div id="introTxt2">게임 시작 후 1분이 지나면 보스가 나타납니다!</div>
                 <div id="introDiv1">
                     <img id="introDiv1_img1" src="images/upKey.png">
                     <img id="introDiv1_img2" src="images/downKey.png">
@@ -105,16 +106,16 @@
             </div>
 
             <!-- 게임 시작 시 화면-->
-            <div class="game_container" id="easyLevel" style="display: none;">
+            <div class="game_container" id="Level" style="display: none;">
             <div class="header">
                 <div class="stats">
                     <span>Point: 000000</span>
                     <span>HP: ♥ ♥ ♥ ♥</span>
                 </div>
                 <div class="items">
-                    <div class="item"></div>
-                    <div class="item"></div>
-                    <div class="item"></div>
+                    <div class="item"><img id="item1" src="./images/ballSize4.png" width="40px" height="40px"></div>
+                    <div class="item"><img id="item2" src="./images/charSize10.png" width="40px" height="40px"></div>
+                    <div class="item"><img  id="item3" src="./images/ballDamage4.png" width="40px" height="40px"></div>
                 </div>
                 <div class="timer">
                     Timer: 01:00
@@ -127,42 +128,6 @@
             <div class="game_container" id="endStory" style="display: none;">
                 <img id="endimg" src="images/endingImg.png"  onclick="gameStart()">
             </div>
-
-            <!-- <div class="game_container" id="normalLevel" style="display: none;">
-            <div class="header">
-                <div class="stats">
-                    <span>Point: 000000</span>
-                    <span>HP: ♥ ♥ ♥ ♥</span>
-                </div>
-                <div class="items">
-                    <div class="item"></div>
-                    <div class="item"></div>
-                    <div class="item"></div>
-                </div>
-                <div class="timer">
-                    Timer: 01:00
-                </div>
-            </div>
-            <canvas class="game-area" id="game_canvas2" width="1000" height="638"></canvas>
-            </div>
-
-            <div class="game_container" id="hardLevel" style="display: none;">
-            <div class="header">
-                <div class="stats">
-                    <span>Point: 000000</span>
-                    <span>HP: ♥ ♥ ♥ ♥</span>
-                </div>
-                <div class="items">
-                    <div class="item"></div>
-                    <div class="item"></div>
-                    <div class="item"></div>
-                </div>
-                <div class="timer">
-                    Timer: 01:00
-                </div>
-            </div>
-            <canvas class="game-area" id="game_canvas3" width="1000" height="638"></canvas>
-            </div> -->
         </div>    
     </body>
 </html>

@@ -85,13 +85,24 @@
 	top: 0px;
 }
 
-#introSection > #introTxt {
+#introSection > #introTxt1 {
 	position: absolute;
 	width: 1000px;
 	height: 100px;
 	line-height: 100px;
 	text-align: center;
 	top: 200px;
+	font-size: 32px;
+	color: #000000;
+}
+
+#introSection > #introTxt2 {
+	position: absolute;
+	width: 1000px;
+	height: 100px;
+	line-height: 100px;
+	text-align: center;
+	top: 250px;
 	font-size: 32px;
 	color: #000000;
 }
@@ -405,9 +416,9 @@
     width: 40px;
     height: 40px;
     margin: 0 5px;
-    background-color: #ddd;
     border: 1px solid #aaa;
 }
+
 #game_canvas1 {
     position: relative;
     width: 1000px;
@@ -430,7 +441,7 @@
     background-size: cover;
 }
 /*게임화면 Canvas 그리기*/
-/*
+
 #game_canvas {
     position: relative;
     width: 1000px;
@@ -438,7 +449,7 @@
     background: url('images/map1.png') no-repeat center center;
     background-size: cover;
 }
-*/
+
 #game_canvas {
     position: relative;
     width: 1000px;

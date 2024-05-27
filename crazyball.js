@@ -10,6 +10,8 @@ var buttonPush = new Audio('bgm/button_push.mp3');
 var easyBgm = new Audio('bgm/easy.mp3');
 var normalBgm = new Audio('bgm/normal.mp3');
 var hardBgm = new Audio('bgm/hard.mp3');
+var settingBgm = new Audio('bgm/setting.mp3');
+
 
 //설정에서 선택한 값들을 저장
 var selectedList = [];
@@ -44,7 +46,7 @@ monsters[4] = {m_img: imgs[4], m_width:50, m_height:55, m_status: 1};
 monsters[5] = {m_img: imgs[5], m_width:75, m_height:83, m_status: 2};
 //보스 객체
 var boss = [];
-boss[0] = {m_img: imgs_boss[0], m_width:300, m_height:330, m_status: 1, speed: 0.1};
+boss[0] = {m_img: imgs_boss[0], m_width:300, m_height:330, m_status: 10, speed: 0.1};
 boss[1] = {m_img: imgs_boss[1], m_width:300, m_height:330, m_status: 20, speed: 0.1};
 boss[2] = {m_img: imgs_boss[2], m_width:300, m_height:330, m_status: 30, speed: 0.1};
 
@@ -112,16 +114,11 @@ var timer;
 var oneMinute;
 var bossTimer;
 
-const stopAudio = () => {
-    track.pause(); // 오디오정지
-    track.currentTime = 0; // 오디오 재생시간을 0으로 변경
-    iconAnimation("stop"); // 정지 상태로 스타일 변경하는 함수
-}
-
-
 //뒤로 돌아가기 버튼
 function shiftMain(){
     hideAllSections();
+    settingBgm.pause();
+    startAudio.play();
     document.getElementById('mainMenu').style.display = 'block';
     buttonPush.play();
 }
@@ -132,15 +129,20 @@ function hideAllSections() {
     document.getElementById('bgStory').style.display = 'none';
     document.getElementById('itemSettings').style.display = 'none';
     document.getElementById('introSection').style.display = 'none';
-    document.getElementById('easyLevel').style.display = 'none';
+    document.getElementById('Level').style.display = 'none';
     document.getElementById('endStory').style.display = 'none';
 }
 
-
+//아이템헤더
+function itemHeader() {
+    document.getElementById("item1").setAttribute("src", "./images/ballSize"+item1_max+".png");
+    document.getElementById("item2").setAttribute("src", "./images/charSize"+item2_max+".png");
+    document.getElementById("item3").setAttribute("src", "./images/ballDamage"+item3_max+".png");
+}
 
 $(document).ready(function () {
     $("#start").click(function(){
-        //startAudio.play();
+        startAudio.play();
     });
     $("#mainBtn1").mouseover(function(){
         $(this).attr("src","images/start2.png");
@@ -270,12 +272,16 @@ function drawCharacter() {
 //게임 시작
 function gameStart(){
     hideAllSections();
+    settingBgm.pause();
+    startAudio.play();
     document.getElementById('mainMenu').style.display = 'block';
 }
 
 //시작 버튼
 function showStart(){
     buttonPush.play();
+    startAudio.pause();
+    settingBgm.play();
     hideAllSections();
     document.getElementById('bgStory').style.display = 'block';
 }
@@ -369,8 +375,10 @@ function resetBall() {
 }
 
 var nowLevel; //현재 레벨
+var nowBoss; //현재 보스
 function gameLevel(i){
         buttonPush.play();
+        settingBgm.pause();
         hideAllSections(); 
         
         if (selectedList[0]) {
@@ -405,29 +413,32 @@ function gameLevel(i){
         characterY = (canvas.height - MyChar.characterHeight) / 2;
     if (i =='1') {
         nowLevel = 1;
-        document.getElementById('easyLevel').style.display = 'block';
-        //startAudio.pause();
-        //easyBgm.play();
+        nowBoss = boss[0];
+        document.getElementById('Level').style.display = 'block';
+        startAudio.pause();
+        easyBgm.play();
         //새로운 벽돌을 추가
-        level = "#easyLevel";
-        ANB = setInterval(addNewBricks, 1000); //10초마다
+        level = "#Level";
+        ANB = setInterval(addNewBricks, 10000); //10초마다
         brickXIncrement = 0.1;
     } else if (i =='2') {
         nowLevel = 2;
-        document.getElementById('easyLevel').style.display = 'block';
-        //startAudio.pause();
-        //normalBgm.play();
+        nowBoss = boss[1];
+        document.getElementById('Level').style.display = 'block';
+        startAudio.pause();
+        normalBgm.play();
         //새로운 벽돌을 추가
-        level = "#easyLevel";
+        level = "#Level";
         ANB = setInterval(addNewBricks, 6000); //6초마다
         brickXIncrement = 0.15;
     } else {
         nowLevel = 3;
-        document.getElementById('easyLevel').style.display = 'block';
-        //startAudio.pause();
-        //hardBgm.play();
+        nowBoss = boss[2];
+        document.getElementById('Level').style.display = 'block';
+        startAudio.pause();
+        hardBgm.play();
         //새로운 벽돌을 추가
-        level = "#easyLevel";
+        level = "#Level";
         ANB = setInterval(addNewBricks, 3000); //3초마다
         brickXIncrement = 0.2;
     }
@@ -459,9 +470,17 @@ function drawBricks() {
                 ctx.drawImage(monster.m_img, brickX, brickY - monster.m_height / 2, monster.m_width, monster.m_height);
                 //끝까지 내려오면 라이프 감소
                 if(bricks[r][c].x <= 0) {
-                    if(monster != item[0] && monster != item[1] && monster != item[2])
+                    if(monster == boss[0] || monster == boss[1] || monster == boss[2]) {
+                        life = 1;
                         lossLife($(level));
-                    bricks[r][c].status = 0;
+                    }
+                    else if(monster == item[0] || monster == item[1] || monster == item[2]) {
+                        bricks[r][c].status = 0;                        
+                    }
+                    else{
+                        bricks[r][c].status = 0;
+                        lossLife($(level));
+                    }
                 }
             }
         }
@@ -485,24 +504,18 @@ function addNewBricks() {
                         if(item1_max <= 0) //아이템1-공크기-+5(최대40)
                             continue;
                         bricks[r].push({ type: item[0], x: canvas.width, y: (2 * r + 1) * (canvas.height - 2 * brickOffsetTop) / 10, status: 1});
-                        //item1--;
-                        //ballRadius += 5;
                         i = 0;
                     }
                     else if(random_3 == 1){
                         if(item2_max <= 0) //아이템2-캐릭터크기-+10(최대200)
                             continue;
                         bricks[r].push({ type: item[1], x: canvas.width, y: (2 * r + 1) * (canvas.height - 2 * brickOffsetTop) / 10, status: 1});
-                        //item2--;
-                        //characterHeight += 10;
                         i = 0;
                     }
                     else{ //아이템3-공데미지+1(최대5)
                         if(item3_max <= 0)
                             continue;
                         bricks[r].push({ type: item[2], x: canvas.width, y: (2 * r + 1) * (canvas.height - 2 * brickOffsetTop) / 10, status: 1});
-                        //item3--;
-                        //ballDamage += 1;
                         i = 0;
                     }
                 }
@@ -512,7 +525,7 @@ function addNewBricks() {
 }
 
 function addBossBricks() {
-    bricks[0].push({ type: boss[0], x: canvas.width, y: canvas.height / 2, status: boss[0].m_status }); // 새로운 벽돌을 오른쪽에 추가
+    bricks[0].push({ type: nowBoss, x: canvas.width, y: canvas.height / 2, status: boss[0].m_status }); // 새로운 벽돌을 오른쪽에 추가
 }
 
 function collisionFunc() {
@@ -578,21 +591,24 @@ function collisionFunc() {
                         //아이템 먹었을 때
                         if(monster == item[0]){ //아이템1-공크기-+5(최대40)
                             if(MyBall.ballRadius < 40)
-                                MyBall.ballRadius += 5
+                                MyBall.ballRadius += 5;
                             console.log(MyBall.ballRadius);
                             item1_max--;
+                            itemHeader();
                         }
                         else if(monster == item[1]) { //아이템2-캐릭터크기-+10(최대200)
                             if(MyChar.characterHeight < 200)
                                 MyChar.characterHeight += 10;
                             console.log(MyChar.characterHeight);
                             item2_max--;
+                            itemHeader();
                         }
                         else if(monster == item[2]) { //아이템3-공데미지+1(최대5)
                             if(ballDamage < 5)
                                 ballDamage += 1;
                             console.log(ballDamage);
                             item3_max--;
+                            itemHeader();
                         }
                         //점수 올리기
                         var score = $(level).find(".header .stats span").eq(0);
@@ -600,7 +616,7 @@ function collisionFunc() {
                             point += 1000;
                         }
                         else if(monster == monsters[2]){
-                            point += 3000;
+                            point += 2000;
                         }
                         else if(monster == monsters[5]){
                             point += 2000;
@@ -618,16 +634,34 @@ function collisionFunc() {
                     }
                     if(monster == boss[0] || monster == boss[1] || monster == boss[2])
                         if(bricks[r][c].status <= 0 ){
-                            alert("clear!!");
+                            alert("clear!!\nTotal point : "+point);
                             resetGame();
-                            if(nowLevel == 1)
+                            if(nowLevel == 1) {
                                 gameLevel('2');
-                            else if(nowLevel == 2)
+                                easyBgm.pause();
+                                normalBgm.play();
+                            }
+                            else if(nowLevel == 2) {
                                 gameLevel('3');
-                            else
+                                normalBgm.pause();
+                                hardBgm.play();
+                            }
+                            else{
                                 //엔딩함수
+                                point = 0;
+                                $(level)
+                                .find(".header .stats span").eq(0)
+                                .text("Point: 000000");
+                                MyBall.ballRadius = 20;
+                                MyChar.characterHeight = 100;
+                                ballDamage = 1;
+                                item1_max = 4;
+                                item2_max = 10;
+                                item3_max = 4;
+                                itemHeader();
                                 gameStart();
                                 endingStory();
+                            }
                         }
                 }
             }
@@ -653,8 +687,22 @@ function lossLife(level) {
     }
     else {
         lifeStats.text("HP:");
-        alert("game over!!");//게임오버
+        alert("game over!!\nTotal point : "+point);//게임오버
         resetGame();
+        point = 0;
+        $(level)
+        .find(".header .stats span").eq(0)
+        .text("Point: 000000");
+        MyBall.ballRadius = 20;
+        MyChar.characterHeight = 100;
+        ballDamage = 1;
+        item1_max = 4;
+        item2_max = 10;
+        item3_max = 4;
+        itemHeader();
+        easyBgm.pause();
+        normalBgm.pause();
+        hardBgm.pause();
         //메인화면으로 돌아가기
         gameStart();
     }
@@ -680,6 +728,8 @@ function bossTime() {
 //hard clear시 스토리 마무리
 function endingStory(){ 
     hideAllSections();
+    hardBgm.pause();
+    settingBgm.play();
     document.getElementById('endStory').style.display = 'block';
 
 }
@@ -714,9 +764,10 @@ function resetGame() {
     //캐릭터 초기화
     characterY = (canvas.height - MyChar.characterHeight) / 2;
     //점수초기화
+/*    point = 0;
     $(level)
     .find(".header .stats span").eq(0)
-    .text("Point: 000000");
+    .text("Point: 000000");*/
     //목숨초기화
     life = 4;
     $(level)
@@ -727,10 +778,11 @@ function resetGame() {
     clearInterval(oneMinute);
     clearInterval(bossTimer);
     //아이템 먹은거 초기화
-    MyBall.ballRadius = 20;
+/*    MyBall.ballRadius = 20;
     MyChar.characterHeight = 100;
     ballDamage = 1;
     item1_max = 4;
     item2_max = 10;
     item3_max = 4;
+    itemHeader();*/
 }
